@@ -1,4 +1,4 @@
-from s16Exercises.ClassPersona import Persona
+from ClassPersona import Persona
 
 
 class Contacts(Persona):
@@ -20,20 +20,40 @@ class Contacts(Persona):
             return f'\nContact list is full\n'
 
     def clear_duplicity(self):
+        duplicity = []
+        old_contact = []
+        # Getting all the duplicities
         for person in self.__contact_list:
             position = (self.__contact_list.index(person))
             if person.name == self.__contact_list[position - 1].name and\
                     person.age == self.__contact_list[position - 1].age and\
                     person.height == self.__contact_list[position - 1].height:
-                print(f"\nWe found a duplicity in your contact list\n"
-                      f" \n{person.returns_data()}\n {self.__contact_list[position - 1].returns_data()}")
-                confirmation = input(f"Are they the same person?(y/n)\n>>> ").upper()
+
+                duplicity.append(person)
+                old_contact.append(self.__contact_list[position - 1])
+
+        # Showing all duplicities
+        print(f"\nWe found a duplicity in your contact list\n")
+        for i in range(len(old_contact)):
+            print(f" {duplicity[i].returns_data()}\n {old_contact[i].returns_data()}")
+            confirmation = input(f"Are they the same person?[Y/N]\n>>> ").upper()
+            while confirmation:  # Confirming if person one == person two
                 if confirmation == 'Y':
-                    self.__contact_list.pop(position)
-                    print(f'\nContact "{person.name}" duplicity was deleted!')
+                    self.__contact_list.pop(self.__contact_list.index(duplicity[i]))
+                    print(f'\nContact "{duplicity[i].name}" duplicity was deleted!')
+                    break
+                elif confirmation == 'N':
+                    new_name = input('Enter a new name for your contact:\n >>> ')  # Setting a new name for person two
+                    while new_name == old_contact[i].name:
+                        new_name = input('\nYou already got a contact with that name\n'
+                                         'Please, Enter a new name for your contact:\n >>> ')
+                    else:
+                        duplicity[i].name = new_name
+                        print(f"\nContact name changed:\n {duplicity[i].returns_data()}")
+                        break
                 else:
-                    person.name = input('Enter a new name for your contact:\n >>> ')
-                    print(f"\nContact name changed:\n {person.returns_data()}")
+                    print('Invalid command!')
+                    confirmation = input(f"Are they the same person?[Y/N]\n>>> ").upper()
 
     def remove_contact(self):
         for person in self.__contact_list:
@@ -42,14 +62,14 @@ class Contacts(Persona):
                 self.__contact_list.pop(position)
                 return f"\nContact found!\n name: {person.name}\n Deleted!"
         else:
-            return f"Contact not found!"
+            return f"\nContact not found!\n"
 
     def search(self):
         for person in self.__contact_list:
             if person.name == self.name:
                 return f"\nContact found!\n name: {person.name}\n id: {(self.__contact_list.index(person)) + 1}"
         else:
-            return f"Contact not found!"
+            return f"\nContact not found!\n"
 
     def all_contacts(self):
         for i in range(len(self.__contact_list)):
