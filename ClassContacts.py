@@ -4,10 +4,10 @@ from ClassPersona import Persona
 class Contacts(Persona):
     contact_list = []
 
-    def __init__(self, name='', age=0, height=0.0):
-        super().__init__(name, age, height)
+    def __init__(self, phone_number=0, name='', age=0, height=0.0, address=''):
+        super().__init__(phone_number, name, age, height, address)
         self.__contact_list = Contacts.contact_list
-        self.__contact = Persona(self.name, self.age, self.height)
+        self.__contact = Persona(self.phone_number, self.name, self.age, self.height, self.address)
 
     def register_contact(self):
         while len(self.__contact_list) < 6:
@@ -25,10 +25,7 @@ class Contacts(Persona):
         # Getting all the duplicities
         for person in self.__contact_list:
             position = (self.__contact_list.index(person))
-            if person.name == self.__contact_list[position - 1].name and\
-                    person.age == self.__contact_list[position - 1].age and\
-                    person.height == self.__contact_list[position - 1].height:
-
+            if person.phone_number == self.__contact_list[position - 1].phone_number:
                 duplicity.append(person)
                 old_contact.append(self.__contact_list[position - 1])
 
@@ -40,16 +37,28 @@ class Contacts(Persona):
             while confirmation:  # Confirming if person one == person two
                 if confirmation == 'Y':
                     self.__contact_list.pop(self.__contact_list.index(duplicity[i]))
-                    print(f'\nContact "{duplicity[i].name}" duplicity was deleted!')
+                    print(f'\nContact "{duplicity[i].name}" duplicity was deleted!\n')
                     break
                 elif confirmation == 'N':
-                    new_name = input('Enter a new name for your contact:\n >>> ')  # Setting a new name for person two
-                    while new_name == old_contact[i].name:
-                        new_name = input('\nYou already got a contact with that name\n'
-                                         'Please, Enter a new name for your contact:\n >>> ')
+                    # Setting a new phone number for person two
+                    try:
+                        new_num = int(input('Enter a new phone number for your contact:\n >>> '))
+                    except ValueError:
+                        new_num = int(input("it's not a number!"
+                                            "\nPlease enter a new phone number for your contact:"
+                                            "\n >>> "))
+
+                    while new_num == old_contact[i].phone_number:
+                        try:
+                            new_num = int(input('\nYou already got a contact with that phone number\n'
+                                                'Please, Enter a new phone number for your contact:\n >>> '))
+                        except ValueError:
+                            new_num = int(input("it's not a number!"
+                                                "\nPlease enter a new phone number for your contact:"
+                                                "\n >>> "))
                     else:
-                        duplicity[i].name = new_name
-                        print(f"\nContact name changed:\n {duplicity[i].returns_data()}")
+                        duplicity[i].phone_number = new_num
+                        print(f"\nContact phone number has changed:\n {duplicity[i].returns_data()}")
                         break
                 else:
                     print('Invalid command!')
@@ -60,31 +69,36 @@ class Contacts(Persona):
             position = (self.__contact_list.index(person))
             if person.name == self.name:
                 self.__contact_list.pop(position)
-                return f"\nContact found!\n name: {person.name}\n Deleted!"
+                return f"\nContact found!\n name: {person.name} phone_number: {person.phone_number}\n Deleted!"
         else:
             return f"\nContact not found!\n"
 
     def search(self):
         for person in self.__contact_list:
             if person.name == self.name:
-                return f"\nContact found!\n name: {person.name}\n id: {(self.__contact_list.index(person)) + 1}"
+                return f"\nContact found!\n |id: {(self.__contact_list.index(person)) + 1}, |name: {person.name}\n" \
+                       f" phone number: {person.phone_number} "
         else:
             return f"\nContact not found!\n"
 
     def all_contacts(self):
+        print('Contact list |-----------------')
         for i in range(len(self.__contact_list)):
             person = self.__contact_list[i]
             position = (self.__contact_list.index(person)) + 1
-            print(f'{position} {person.name}')
+            print(f' |id: {position}| name: {person.name}|\n'
+                  f' |Phone Number: {person.phone_number}')
+            print(' -' * 10)
 
 
+# Running Examples
 # Contatos para registrar
-jp = Contacts('João Pedro', 18, 1.80)
-marcos = Contacts('Marcos', 21, 1.83)
-joao = Contacts('João', 35, 1.80)
-nick = Contacts('nicolas', 24, 1.75)
-jp_2 = Contacts('João Pedro', 18, 1.80)
-nick2 = Contacts('nicolas', 24, 1.75)
+jp = Contacts(12_99856_4556, 'João Pedro', 18, 1.80)
+marcos = Contacts(11_96954_7854, 'Marcos', 21, 1.83)
+joao = Contacts(13_99456_5412, 'João', 35, 1.80)
+nick = Contacts(11_99717_7177, 'nicolas', 24, 1.75)
+jp_2 = Contacts(12_99856_4556, 'João Pedro', 18, 1.80)
+nick2 = Contacts(11_99717_7177, 'nicolas', 24, 1.75)
 
 # Registrando
 jp.register_contact()
@@ -100,7 +114,7 @@ Contacts().all_contacts()
 # Procurando por contato X
 print(nick.search())
 #  Ou
-print(Contacts('zezé', 21, 1.83).search())
+print(Contacts(name='zezé').search())
 
 # Removendo Contato
 print(marcos.remove_contact())
